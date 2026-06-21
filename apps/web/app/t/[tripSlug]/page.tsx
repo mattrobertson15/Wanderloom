@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTripBySlug, listPostsForTrip } from "@wanderloom/api";
 import type { WanderloomClient } from "@wanderloom/db";
@@ -38,6 +39,10 @@ export default async function PublicTripPage({ params }: { params: Promise<{ tri
   const supabase = await getServerSupabaseClient();
   const trip = await loadTripOrNotFound(supabase, tripSlug);
   const posts = await listPostsForTrip(supabase, trip.id);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwner = user?.id === trip.owner_id;
 
   const postCards: PostCardData[] = posts.map((post) => ({
     title: post.title,
@@ -54,9 +59,19 @@ export default async function PublicTripPage({ params }: { params: Promise<{ tri
         style={{ backgroundImage: `url(${FALLBACK_COVER_IMAGE_URL})` }}
       />
       <div className="mx-auto max-w-4xl px-6 py-8 md:px-12">
-        <div className="flex items-center gap-3">
-          <h1 className="font-display text-3xl text-text-primary">{trip.title}</h1>
-          <VisibilityBadge visibility={trip.visibility} />
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-3xl text-text-primary">{trip.title}</h1>
+            <VisibilityBadge visibility={trip.visibility} />
+          </div>
+          {isOwner && (
+            <Link
+              href={`/t/${trip.slug}/posts/new`}
+              className="rounded-pill bg-accent-primary px-4 py-2 text-sm text-white"
+            >
+              Add post
+            </Link>
+          )}
         </div>
         {postCards.length === 0 ? (
           <p className="mt-6 text-sm text-text-secondary">No posts yet.</p>

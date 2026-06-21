@@ -30,11 +30,11 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Landing page
 - [x] Auth screens (sign in, sign up)
 - [x] Authenticated app shell + nav
-- [ ] Trip list/detail/create/edit (list/detail render mock data only; no create/edit wired to API)
+- [x] Trip list/detail/create (real Supabase queries; no edit/delete UI yet)
 - [ ] Album create/edit nested in trip
-- [ ] Post create/edit (title/body/date/photos/place)
+- [x] Post create (title/body/date/visibility, owner-gated at `/t/[tripSlug]/posts/new`; no edit/delete UI, no place/photo attach yet)
 - [x] Globe/map view with pins + filters (mock pin data)
-- [ ] Visibility controls (private/friends/public) (form UI exists on trip-create page; not wired to a real submit)
+- [x] Visibility controls (private/friends/public) (wired on trip-create and post-create forms)
 - [x] Public profile page (`/u/[username]`) (mock public trips)
 - [x] Public trip page (`/t/[tripSlug]`)
 - [ ] Shareable link generation + `/share/[token]` resolver (API functions exist; resolver page is a TODO stub)
