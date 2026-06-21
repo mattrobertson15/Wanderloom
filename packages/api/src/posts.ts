@@ -4,7 +4,7 @@ import type { CreatePhotoInput, CreatePostInput, UpdatePostInput } from "@wander
 export async function listPostsForTrip(client: WanderloomClient, tripId: string) {
   const { data, error } = await client
     .from("posts")
-    .select("*, photos(*)")
+    .select("*, photos(*), places(name)")
     .eq("trip_id", tripId)
     .order("post_date", { ascending: true });
   if (error) throw error;
