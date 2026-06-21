@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Wanderloom",
+    "slug": "wanderloom",
+    "scheme": "wanderloom",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.wanderloom.app"
+    },
+    "android": {
+      "package": "com.wanderloom.app"
+    },
+    "plugins": ["expo-router", "expo-secure-store", "@rnmapbox/maps"],
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}
