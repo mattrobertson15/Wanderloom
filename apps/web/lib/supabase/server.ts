@@ -26,5 +26,10 @@ export async function getServerSupabaseClient(): Promise<WanderloomClient> {
         }
       },
     },
+    global: {
+      // Next.js patches global fetch with its Data Cache; without this,
+      // personalized Supabase reads get cached and served stale across requests.
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
   }) as WanderloomClient;
 }

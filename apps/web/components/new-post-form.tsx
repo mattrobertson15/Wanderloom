@@ -53,6 +53,7 @@ export function NewPostForm({
     try {
       await createPost(client, user.id, parsed.data);
       router.push(`/t/${tripSlug}`);
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create post");
       setLoading(false);
