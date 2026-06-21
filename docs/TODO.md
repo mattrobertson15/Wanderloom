@@ -11,41 +11,41 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [ ] Set up CI (lint, typecheck, test) on PRs
 
 ## Database
-- [ ] Write SQL migrations for all tables/enums (`packages/db/migrations`)
-- [ ] Enable `postgis` extension
-- [ ] Add GiST indexes on geography columns
-- [ ] Write RLS policies for trips/albums/posts/photos/places/pins
-- [ ] Implement `pins` derivation (trigger-maintained table or view)
-- [ ] Generate TypeScript types from schema
-- [ ] Write seed script (profiles, places, trips, albums, posts, photos, friendships, follows)
+- [x] Write SQL migrations for all tables/enums (`packages/db/migrations`)
+- [x] Enable `postgis` extension
+- [x] Add GiST indexes on geography columns
+- [x] Write RLS policies for trips/albums/posts/photos/places/pins
+- [x] Implement `pins` derivation (trigger-maintained table or view)
+- [ ] Generate TypeScript types from schema (currently hand-authored stub in `packages/db/src/types.ts`; switch to `supabase gen types` once a live project exists)
+- [x] Write seed script (profiles, places, trips, albums, posts, photos, friendships, follows)
 
 ## Auth
-- [ ] Configure Supabase email/password auth
-- [ ] `profiles` creation trigger on `auth.users` insert
-- [ ] Web: Supabase session handling via `@supabase/ssr`
-- [ ] Mobile: Supabase session handling via `expo-secure-store`
-- [ ] Disabled Google/Apple button stubs (web + mobile) with `TODO(auth-oauth)`
+- [x] Configure Supabase email/password auth
+- [x] `profiles` creation trigger on `auth.users` insert
+- [x] Web: Supabase session handling via `@supabase/ssr`
+- [x] Mobile: Supabase session handling via `expo-secure-store`
+- [x] Disabled Google/Apple button stubs (web + mobile) with `TODO(auth-oauth)`
 
 ## Web
-- [ ] Landing page
-- [ ] Auth screens (sign in, sign up)
-- [ ] Authenticated app shell + nav
-- [ ] Trip list/detail/create/edit
+- [x] Landing page
+- [x] Auth screens (sign in, sign up)
+- [x] Authenticated app shell + nav
+- [x] Trip list/detail/create (real Supabase queries; no edit/delete UI yet)
 - [ ] Album create/edit nested in trip
-- [ ] Post create/edit (title/body/date/photos/place)
-- [ ] Globe/map view with pins + filters
-- [ ] Visibility controls (private/friends/public)
-- [ ] Public profile page (`/u/[username]`)
-- [ ] Public trip page (`/t/[tripSlug]`)
-- [ ] Shareable link generation + `/share/[token]` resolver
+- [x] Post create (title/body/date/visibility, owner-gated at `/t/[tripSlug]/posts/new`; no edit/delete UI, no place/photo attach yet)
+- [x] Globe/map view with pins + filters (mock pin data)
+- [x] Visibility controls (private/friends/public) (wired on trip-create and post-create forms)
+- [x] Public profile page (`/u/[username]`) (mock public trips)
+- [x] Public trip page (`/t/[tripSlug]`)
+- [ ] Shareable link generation + `/share/[token]` resolver (API functions exist; resolver page is a TODO stub)
 - [ ] Friends/follow basic UI
-- [ ] Open Graph meta tags for public pages
+- [ ] Open Graph meta tags for public pages (present on trip page only; not app-wide)
 
 ## Mobile
-- [ ] Login/signup screens
-- [ ] Tab navigation (Globe, Trips, Create, Discover, Profile)
-- [ ] Globe/map view
-- [ ] Trip list/detail view
+- [x] Login/signup screens
+- [x] Tab navigation (Globe, Trips, Create, Discover, Profile)
+- [x] Globe/map view
+- [ ] Trip list/detail view (list only, mock data; no detail route)
 - [ ] Post creation flow
 - [ ] Photo upload flow
 - [ ] Place search/attach/create flow
@@ -53,29 +53,29 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [ ] Browse friends'/public trips
 
 ## Maps
-- [ ] Shared GeoJSON transform helpers (`packages/domain`/`packages/ui`)
-- [ ] Web: Mapbox GL JS globe view
-- [ ] Mobile: `@rnmapbox/maps` globe view with Mercator fallback flag
+- [x] Shared GeoJSON transform helpers (`packages/domain`/`packages/ui`)
+- [x] Web: Mapbox GL JS globe view
+- [x] Mobile: `@rnmapbox/maps` globe view with Mercator fallback flag
 - [ ] Client-side pin clustering
 - [ ] Pin tap → preview → navigate
 
 ## Media
-- [ ] Storage buckets: `avatars`, `trip-covers`, `post-photos`
-- [ ] Storage bucket RLS/access policies
+- [x] Storage buckets: `avatars`, `trip-covers`, `post-photos`
+- [x] Storage bucket RLS/access policies
 - [ ] Web photo upload flow
 - [ ] Mobile photo upload flow
 - [ ] Basic upload retry handling
 
 ## Social
-- [ ] Friend request send/accept/decline/remove
-- [ ] Follow/unfollow
-- [ ] Trip collaborator invite/manage (viewer/editor)
-- [ ] Visibility enforcement tests (owner/collaborator/friend/public/anonymous matrix)
+- [x] Friend request send/accept/decline/remove
+- [x] Follow/unfollow
+- [ ] Trip collaborator invite/manage (viewer/editor) (RLS policies exist; no API functions or UI)
+- [x] Visibility enforcement tests (owner/collaborator/friend/public/anonymous matrix)
 
 ## Public Sharing
-- [ ] Public profile page rendering rules
-- [ ] Public trip page rendering rules
-- [ ] Shareable link generation + resolution
+- [x] Public profile page rendering rules
+- [x] Public trip page rendering rules
+- [ ] Shareable link generation + resolution (API functions exist; resolver route is a stub)
 - [ ] Public trips discovery/browse index
 
 ## AI
@@ -87,7 +87,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [ ] `ai_usage` event tracking
 
 ## Testing
-- [ ] Unit tests for `packages/domain` visibility/permission logic
+- [x] Unit tests for `packages/domain` visibility/permission logic
 - [ ] Unit tests for `packages/validation` schemas
 - [ ] RLS policy tests (direct DB probing, not just UI)
 - [ ] End-to-end smoke test of core loop (signup → trip → post → pin) on web

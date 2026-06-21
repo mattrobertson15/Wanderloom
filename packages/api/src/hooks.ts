@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateTripInput, CreatePostInput, UpdateTripInput } from "@wanderloom/validation";
 import { useWanderloomClient } from "./client-context";

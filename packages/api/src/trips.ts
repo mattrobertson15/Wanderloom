@@ -16,7 +16,7 @@ export async function getTripById(client: WanderloomClient, id: string) {
 export async function listTripsForOwner(client: WanderloomClient, ownerId: string) {
   const { data, error } = await client
     .from("trips")
-    .select("*")
+    .select("*, pins(place_id)")
     .eq("owner_id", ownerId)
     .order("created_at", { ascending: false });
   if (error) throw error;
