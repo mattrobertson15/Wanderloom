@@ -40,6 +40,19 @@ export async function removeFriendship(client: WanderloomClient, friendshipId: s
   if (error) throw error;
 }
 
+/** The friendship row between two profiles, regardless of who requested whom. */
+export async function getFriendshipBetween(client: WanderloomClient, profileA: string, profileB: string) {
+  const { data, error } = await client
+    .from("friendships")
+    .select("*")
+    .or(
+      `and(requester_id.eq.${profileA},addressee_id.eq.${profileB}),and(requester_id.eq.${profileB},addressee_id.eq.${profileA})`,
+    )
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function listFollows(client: WanderloomClient, profileId: string) {
   const { data, error } = await client
     .from("follows")
@@ -66,6 +79,17 @@ export async function unfollowProfile(client: WanderloomClient, followerId: stri
     .eq("follower_id", followerId)
     .eq("followee_id", followeeId);
   if (error) throw error;
+}
+
+export async function getFollowBetween(client: WanderloomClient, followerId: string, followeeId: string) {
+  const { data, error } = await client
+    .from("follows")
+    .select("*")
+    .eq("follower_id", followerId)
+    .eq("followee_id", followeeId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
 function randomToken(): string {

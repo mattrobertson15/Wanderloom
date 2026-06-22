@@ -1,5 +1,6 @@
 export * from "./client-context";
 export * from "./query-keys";
+export * from "./profiles";
 export * from "./trips";
 export * from "./albums";
 export * from "./posts";

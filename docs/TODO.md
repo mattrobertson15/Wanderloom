@@ -38,7 +38,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Public profile page (`/u/[username]`) (mock public trips)
 - [x] Public trip page (`/t/[tripSlug]`)
 - [x] Shareable link generation + `/share/[token]` resolver
-- [ ] Friends/follow basic UI
+- [x] Friends/follow basic UI (`/friends` page, user search, follow/friend-request buttons; wired into `/u/[username]` header)
 - [ ] Open Graph meta tags for public pages (present on trip page only; not app-wide)
 
 ## Mobile

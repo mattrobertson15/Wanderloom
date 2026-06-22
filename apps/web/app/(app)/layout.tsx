@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 const NAV_ITEMS = [
   { href: "/globe", label: "Globe" },
   { href: "/trips", label: "Trips" },
+  { href: "/friends", label: "Friends" },
   { href: "/profile", label: "Profile" },
 ];
 
