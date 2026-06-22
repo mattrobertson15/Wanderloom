@@ -26,10 +26,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { tripSlug } = await params;
   const supabase = await getServerSupabaseClient();
-  const { data: trip } = await supabase.from("trips").select("title").eq("slug", tripSlug).single();
+  const { data: trip } = await supabase.from("trips").select("title, description").eq("slug", tripSlug).single();
+  if (!trip) {
+    return { title: "Trip · Wanderloom" };
+  }
+  const title = `${trip.title} · Wanderloom`;
+  const description = trip.description ?? `Follow along on ${trip.title} on Wanderloom.`;
   return {
-    title: trip ? `${trip.title} · Wanderloom` : "Trip · Wanderloom",
-    openGraph: trip ? { images: [FALLBACK_COVER_IMAGE_URL] } : undefined,
+    title,
+    description,
+    openGraph: { title, description, type: "website", images: [FALLBACK_COVER_IMAGE_URL] },
+    twitter: { card: "summary_large_image", title, description, images: [FALLBACK_COVER_IMAGE_URL] },
   };
 }
 

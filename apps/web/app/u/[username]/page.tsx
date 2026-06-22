@@ -14,7 +14,22 @@ export async function generateMetadata({
   params: Promise<{ username: string }>;
 }): Promise<Metadata> {
   const { username } = await params;
-  return { title: `@${username} · Wanderloom` };
+  const supabase = await getServerSupabaseClient();
+  let profile;
+  try {
+    profile = await getProfileByUsername(supabase, username);
+  } catch {
+    return { title: `@${username} · Wanderloom` };
+  }
+  const title = `${profile.display_name ?? `@${profile.username}`} · Wanderloom`;
+  const description = profile.bio ?? `See @${profile.username}'s public trips on Wanderloom.`;
+  const images = profile.avatar_url ? [profile.avatar_url] : undefined;
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: "profile", images },
+    twitter: { card: "summary", title, description, images },
+  };
 }
 
 // Public profile page — SSR, no auth required. Profile identity (name,
