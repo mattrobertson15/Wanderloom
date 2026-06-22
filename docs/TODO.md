@@ -50,7 +50,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Photo upload flow (`expo-image-picker` with `base64: true`, decoded to `ArrayBuffer` and uploaded via shared `uploadPostPhoto`/`attachPhotoToPost`; thumbnail preview + remove in `/create`; still no photo *display* in trip detail — no signed-URL endpoint on mobile)
 - [ ] Place search/attach/create flow
 - [x] Visibility selector (shared `VisibilitySelector` component on web + mobile with icon/label/description per level, replacing inline radio/pill lists in post and trip creation forms)
-- [ ] Browse friends'/public trips
+- [x] Browse friends'/public trips (`Discover` tab uses new `listDiscoverableTrips` — relies on the existing `can_view_trip` RLS policy to surface friends'-visibility and public trips, excluding the viewer's own; shows owner `@username` on each card; friend-request/follow actions remain web-only)
 
 ## Maps
 - [x] Shared GeoJSON transform helpers (`packages/domain`/`packages/ui`)

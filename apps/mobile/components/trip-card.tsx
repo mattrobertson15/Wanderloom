@@ -12,6 +12,7 @@ export interface TripCardData {
   startDate: string | null;
   endDate: string | null;
   visibility: Visibility;
+  ownerLabel?: string;
 }
 
 export function TripCard({ trip }: { trip: TripCardData }) {
@@ -23,6 +24,7 @@ export function TripCard({ trip }: { trip: TripCardData }) {
             <VisibilityBadge visibility={trip.visibility} />
           </View>
           <View style={styles.overlay}>
+            {trip.ownerLabel && <Text style={styles.ownerLabel}>{trip.ownerLabel}</Text>}
             <Text style={styles.title}>{trip.title}</Text>
             <Text style={styles.dateRange}>{formatDateRange(trip.startDate, trip.endDate)}</Text>
           </View>
@@ -38,6 +40,7 @@ const styles = StyleSheet.create({
   imageInner: { borderRadius: 16 },
   badgeRow: { padding: 12, alignItems: "flex-end" },
   overlay: { padding: 12, backgroundColor: "rgba(0,0,0,0.35)" },
+  ownerLabel: { color: "rgba(255,255,255,0.85)", fontSize: 12, marginBottom: 2 },
   title: { color: "white", fontSize: 18, fontWeight: "600" },
   dateRange: { color: "rgba(255,255,255,0.85)", fontSize: 12, marginTop: 2 },
 });
