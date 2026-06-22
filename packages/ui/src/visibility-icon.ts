@@ -12,6 +12,13 @@ export const VISIBILITY_ICON_NAME: Record<Visibility, "lock" | "users" | "globe"
   public: "globe",
 };
 
+/** Emoji fallback used where apps don't pull in a full icon set. */
+export const VISIBILITY_EMOJI: Record<Visibility, string> = {
+  private: "🔒",
+  friends: "👥",
+  public: "🌐",
+};
+
 export function visibilityColor(visibility: Visibility): string {
   return colors.visibility[visibility];
 }
@@ -24,5 +31,16 @@ export function visibilityLabel(visibility: Visibility): string {
       return "Friends only";
     case "public":
       return "Public";
+  }
+}
+
+export function visibilityDescription(visibility: Visibility): string {
+  switch (visibility) {
+    case "private":
+      return "Only you can see this.";
+    case "friends":
+      return "Visible to friends you've connected with.";
+    case "public":
+      return "Anyone can see this.";
   }
 }

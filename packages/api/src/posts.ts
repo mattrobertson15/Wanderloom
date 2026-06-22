@@ -72,3 +72,39 @@ export async function deletePhoto(client: WanderloomClient, photoId: string) {
   const { error } = await client.from("photos").delete().eq("id", photoId);
   if (error) throw error;
 }
+
+/**
+ * Uploads a photo file into the (uploader-scoped) `post-photos` bucket and
+ * returns its storage path. Callers still need to insert a `photos` row via
+ * `attachPhotoToPost` to make it queryable.
+ *
+ * `file` accepts a `Blob`/`File` (web) or `ArrayBuffer` (React Native, where
+ * `File`/`Blob` uploads are unreliable over the JS bridge) — `fileName` is
+ * taken as a separate argument since `ArrayBuffer` has no `.name`.
+ */
+export async function uploadPostPhoto(
+  client: WanderloomClient,
+  uploaderId: string,
+  postId: string,
+  file: Blob | ArrayBuffer,
+  fileName: string,
+  contentType?: string,
+) {
+  const uploadId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  const path = `${uploaderId}/${postId}/${uploadId}-${fileName}`;
+  const { error } = await client.storage.from("post-photos").upload(path, file, contentType ? { contentType } : undefined);
+  if (error) throw error;
+  return path;
+}
+
+/**
+ * `post-photos` has no select policy on `storage.objects`, so minting a
+ * signed URL requires the service-role client — call this only from a
+ * trusted server context, after fetching the owning `photos` row through a
+ * session/anon client whose RLS pass already proved the viewer can see it.
+ */
+export async function createSignedPhotoUrl(client: WanderloomClient, storagePath: string, expiresInSeconds = 3600) {
+  const { data, error } = await client.storage.from("post-photos").createSignedUrl(storagePath, expiresInSeconds);
+  if (error) throw error;
+  return data.signedUrl;
+}

@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createTrip, useWanderloomClient } from "@wanderloom/api";
-import { VISIBILITY_LEVELS } from "@wanderloom/config";
+import type { Visibility } from "@wanderloom/config";
 import { createTripSchema } from "@wanderloom/validation";
+import { VisibilitySelector } from "@/components/visibility-selector";
 
 function slugify(title: string): string {
   const base = title
@@ -20,7 +21,7 @@ export default function NewTripPage() {
   const router = useRouter();
   const client = useWanderloomClient();
   const [title, setTitle] = useState("");
-  const [visibility, setVisibility] = useState<(typeof VISIBILITY_LEVELS)[number]>("private");
+  const [visibility, setVisibility] = useState<Visibility>("private");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -67,21 +68,7 @@ export default function NewTripPage() {
             placeholder="America 2026"
           />
         </label>
-        <fieldset className="flex flex-col gap-2 text-sm text-text-secondary">
-          <legend className="mb-1">Visibility</legend>
-          {VISIBILITY_LEVELS.map((level) => (
-            <label key={level} className="flex items-center gap-2 capitalize">
-              <input
-                type="radio"
-                name="visibility"
-                value={level}
-                checked={visibility === level}
-                onChange={() => setVisibility(level)}
-              />
-              {level}
-            </label>
-          ))}
-        </fieldset>
+        <VisibilitySelector value={visibility} onChange={setVisibility} />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           type="submit"

@@ -31,38 +31,38 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Auth screens (sign in, sign up)
 - [x] Authenticated app shell + nav
 - [x] Trip list/detail/create (real Supabase queries; no edit/delete UI yet)
-- [ ] Album create/edit nested in trip
-- [x] Post create (title/body/date/visibility, owner-gated at `/t/[tripSlug]/posts/new`; no edit/delete UI, no place/photo attach yet)
+- [x] Album create/edit nested in trip
+- [x] Post create (title/body/date/visibility, owner-gated at `/t/[tripSlug]/posts/new`; photo attach now wired; no edit/delete UI, no place attach yet)
 - [x] Globe/map view with pins + filters (mock pin data)
 - [x] Visibility controls (private/friends/public) (wired on trip-create and post-create forms)
 - [x] Public profile page (`/u/[username]`) (mock public trips)
 - [x] Public trip page (`/t/[tripSlug]`)
-- [ ] Shareable link generation + `/share/[token]` resolver (API functions exist; resolver page is a TODO stub)
-- [ ] Friends/follow basic UI
-- [ ] Open Graph meta tags for public pages (present on trip page only; not app-wide)
+- [x] Shareable link generation + `/share/[token]` resolver
+- [x] Friends/follow basic UI (`/friends` page, user search, follow/friend-request buttons; wired into `/u/[username]` header)
+- [x] Open Graph meta tags for public pages (trip page, public profile page, plus site-wide defaults in root layout)
 
 ## Mobile
 - [x] Login/signup screens
 - [x] Tab navigation (Globe, Trips, Create, Discover, Profile)
 - [x] Globe/map view
-- [ ] Trip list/detail view (list only, mock data; no detail route)
-- [ ] Post creation flow
-- [ ] Photo upload flow
-- [ ] Place search/attach/create flow
-- [ ] Visibility selector
-- [ ] Browse friends'/public trips
+- [x] Trip list/detail view (real Supabase data via `@tanstack/react-query`; `/trip/[id]` detail route shows posts, no photos yet — no signed-URL endpoint on mobile)
+- [x] Post creation flow (`/create` tab: trip picker, title/body/date/visibility, real `createPost`; no photo attach or place attach yet)
+- [x] Photo upload flow (`expo-image-picker` with `base64: true`, decoded to `ArrayBuffer` and uploaded via shared `uploadPostPhoto`/`attachPhotoToPost`; thumbnail preview + remove in `/create`; still no photo *display* in trip detail — no signed-URL endpoint on mobile)
+- [x] Place search/attach/create flow (`PlacePicker` in `/create`: search existing places via `searchPlacesByName`, attach by setting `place_id`; if no match, create one from the device's current location via `expo-location`)
+- [x] Visibility selector (shared `VisibilitySelector` component on web + mobile with icon/label/description per level, replacing inline radio/pill lists in post and trip creation forms)
+- [x] Browse friends'/public trips (`Discover` tab uses new `listDiscoverableTrips` — relies on the existing `can_view_trip` RLS policy to surface friends'-visibility and public trips, excluding the viewer's own; shows owner `@username` on each card; friend-request/follow actions remain web-only)
 
 ## Maps
 - [x] Shared GeoJSON transform helpers (`packages/domain`/`packages/ui`)
 - [x] Web: Mapbox GL JS globe view
 - [x] Mobile: `@rnmapbox/maps` globe view with Mercator fallback flag
-- [ ] Client-side pin clustering
-- [ ] Pin tap → preview → navigate
+- [x] Client-side pin clustering (Mapbox `cluster`/`clusterRadius`/`clusterMaxZoom(Level)` on the shared GeoJSON source for web and mobile; cluster circle + count layers, click/press to zoom into a cluster)
+- [x] Pin tap → preview → navigate (tapping an unclustered pin shows a place-name preview card with a "View trip" link to `/t/[tripSlug]` (web) / `/trip/[tripSlug]` (mobile); `PinForMap`/`PinFeatureProperties` extended with `trip_slug`/`tripSlug` to carry the nav target; globe screens still render mock pin data — wiring `useVisiblePins()` is a separate, pre-existing gap noted inline as shipping later)
 
 ## Media
 - [x] Storage buckets: `avatars`, `trip-covers`, `post-photos`
 - [x] Storage bucket RLS/access policies
-- [ ] Web photo upload flow
+- [x] Web photo upload flow
 - [ ] Mobile photo upload flow
 - [ ] Basic upload retry handling
 
@@ -75,7 +75,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 ## Public Sharing
 - [x] Public profile page rendering rules
 - [x] Public trip page rendering rules
-- [ ] Shareable link generation + resolution (API functions exist; resolver route is a stub)
+- [x] Shareable link generation + resolution
 - [ ] Public trips discovery/browse index
 
 ## AI

@@ -1,12 +1,32 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { listTripsForOwner, queryKeys, useWanderloomClient } from "@wanderloom/api";
 import { colors } from "@wanderloom/config";
-import { TripCard } from "@/components/trip-card";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { TripCard, type TripCardData } from "@/components/trip-card";
 import { useAuth } from "@/lib/auth-context";
 import { getMobileSupabaseClient } from "@/lib/supabase/client";
-import { MOCK_TRIPS } from "@/lib/mock/trips";
+
+const FALLBACK_COVER_IMAGE_URL = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800";
 
 export default function ProfileScreen() {
   const { session } = useAuth();
+  const client = useWanderloomClient();
+  const userId = session?.user.id;
+
+  const { data: trips } = useQuery({
+    queryKey: userId ? queryKeys.tripsByOwner(userId) : ["trips", "owner", "anonymous"],
+    queryFn: () => listTripsForOwner(client, userId!),
+    enabled: Boolean(userId),
+  });
+
+  const tripCards: TripCardData[] = (trips ?? []).map((trip) => ({
+    slug: trip.slug,
+    title: trip.title,
+    coverImageUrl: FALLBACK_COVER_IMAGE_URL,
+    startDate: trip.start_date,
+    endDate: trip.end_date,
+    visibility: trip.visibility,
+  }));
 
   return (
     <View style={styles.container}>
@@ -18,7 +38,7 @@ export default function ProfileScreen() {
         </View>
       </View>
       <FlatList
-        data={MOCK_TRIPS}
+        data={tripCards}
         keyExtractor={(trip) => trip.slug}
         contentContainerStyle={styles.list}
         ListHeaderComponent={<Text style={styles.sectionTitle}>Your trips</Text>}

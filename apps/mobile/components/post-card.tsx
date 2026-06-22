@@ -1,9 +1,16 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { colors } from "@wanderloom/config";
 import { formatJournalDate } from "@wanderloom/ui";
-import type { MockPost } from "@/lib/mock/posts";
 
-export function PostCard({ post }: { post: MockPost }) {
+export interface PostCardData {
+  title: string | null;
+  body: string | null;
+  photoUrl: string | null;
+  placeName: string | null;
+  postDate: string | null;
+}
+
+export function PostCard({ post }: { post: PostCardData }) {
   return (
     <View style={styles.card}>
       {post.photoUrl && <Image source={{ uri: post.photoUrl }} style={styles.image} />}
