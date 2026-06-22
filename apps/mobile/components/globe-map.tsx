@@ -1,11 +1,9 @@
-import Mapbox, { Camera, MapView, ShapeSource, CircleLayer, SymbolLayer } from "@rnmapbox/maps";
-import { useEffect, useRef } from "react";
+import MapView, { Marker } from "react-native-maps";
+import { useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { colors, MOBILE_GLOBE_PROJECTION_ENABLED } from "@wanderloom/config";
-import { pinsToFeatureCollection, type PinFeatureProperties, type PinForMap } from "@wanderloom/domain";
-
-const token = process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
-const PINS_SOURCE_ID = "wanderloom-pins";
+import Supercluster, { type ClusterFeature } from "supercluster";
+import { colors } from "@wanderloom/config";
+import { type PinFeatureProperties, type PinForMap } from "@wanderloom/domain";
 
 export function GlobeMap({
   pins,
@@ -14,83 +12,115 @@ export function GlobeMap({
   pins: PinForMap[];
   onPinSelect?: (properties: PinFeatureProperties) => void;
 }) {
-  const cameraRef = useRef<Camera>(null);
-  const shapeSourceRef = useRef<ShapeSource>(null);
+  const mapRef = useRef<MapView>(null);
+  const [zoom, setZoom] = useState(1.2);
 
-  useEffect(() => {
-    if (token) Mapbox.setAccessToken(token);
-  }, []);
+  const cluster = useMemo(() => {
+    const supercluster = new Supercluster({
+      radius: 50,
+      maxZoom: 14,
+      minZoom: 0,
+    });
 
-  if (!token) {
-    return (
-      <View style={[styles.fallback, { backgroundColor: colors.map.base }]}>
-        <Text style={{ color: colors.text.secondary }}>Set EXPO_PUBLIC_MAPBOX_TOKEN to render the live map.</Text>
-      </View>
-    );
-  }
+    const points = pins.map((pin) => ({
+      type: "Feature" as const,
+      geometry: {
+        type: "Point" as const,
+        coordinates: [pin.location.lng, pin.location.lat],
+      },
+      properties: pin,
+    }));
 
-  const featureCollection = pinsToFeatureCollection(pins);
+    supercluster.load(points);
+    return supercluster;
+  }, [pins]);
+
+  const clustered = useMemo(() => {
+    return cluster.getClusters([-180, -85, 180, 85], Math.floor(zoom));
+  }, [cluster, zoom]);
+
+  const handleMarkerPress = (item: ClusterFeature<any>) => {
+    if (item.properties.point_count != null && typeof item.id === 'number') {
+      // For clusters, just zoom to the cluster center coordinates
+      // Supercluster's getClusterExpansionZoom returns a zoom level, not bbox
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(
+          {
+            latitude: item.geometry.coordinates[1],
+            longitude: item.geometry.coordinates[0],
+            latitudeDelta: 10,
+            longitudeDelta: 10,
+          },
+          300
+        );
+      }
+      return;
+    }
+
+    onPinSelect?.(item.properties as PinFeatureProperties);
+  };
 
   return (
     <MapView
+      ref={mapRef}
       style={styles.map}
-      styleURL="mapbox://styles/mapbox/light-v11"
-      projection={MOBILE_GLOBE_PROJECTION_ENABLED ? "globe" : "mercator"}
+      initialRegion={{
+        latitude: 20,
+        longitude: 10,
+        latitudeDelta: 80,
+        longitudeDelta: 360,
+      }}
+      onRegionChangeComplete={(region) => {
+        const newZoom = Math.log2(360 / region.longitudeDelta);
+        setZoom(Math.max(0, Math.min(14, newZoom)));
+      }}
     >
-      <Camera ref={cameraRef} defaultSettings={{ centerCoordinate: [10, 20], zoomLevel: 1.2 }} />
-      <ShapeSource
-        ref={shapeSourceRef}
-        id={PINS_SOURCE_ID}
-        shape={featureCollection}
-        cluster
-        clusterRadius={50}
-        clusterMaxZoomLevel={14}
-        onPress={async (event) => {
-          const feature = event.features[0];
-          if (!feature) return;
+      {clustered.map((item: ClusterFeature<any>) => {
+        const isCluster = item.properties.point_count != null;
+        const count = item.properties.point_count ?? 1;
 
-          if (feature.properties?.point_count != null) {
-            if (feature.geometry.type !== "Point") return;
-            const zoom = await shapeSourceRef.current?.getClusterExpansionZoom(feature);
-            if (zoom == null) return;
-            cameraRef.current?.setCamera({
-              centerCoordinate: feature.geometry.coordinates as [number, number],
-              zoomLevel: zoom,
-              animationDuration: 300,
-            });
-            return;
-          }
-
-          onPinSelect?.(feature.properties as PinFeatureProperties);
-        }}
-      >
-        <CircleLayer
-          id="pins-clusters"
-          filter={["has", "point_count"]}
-          style={{
-            circleColor: colors.map.pin,
-            circleOpacity: 0.85,
-            circleRadius: ["step", ["get", "point_count"], 16, 10, 22, 50, 28],
-            circleStrokeWidth: 2,
-            circleStrokeColor: "#fff",
-          }}
-        />
-        <SymbolLayer
-          id="pins-cluster-count"
-          filter={["has", "point_count"]}
-          style={{ textField: ["get", "point_count_abbreviated"], textSize: 12, textColor: "#fff" }}
-        />
-        <CircleLayer
-          id="pins-unclustered"
-          filter={["!", ["has", "point_count"]]}
-          style={{ circleRadius: 6, circleColor: colors.map.pin, circleStrokeWidth: 2, circleStrokeColor: "#fff" }}
-        />
-      </ShapeSource>
+        return (
+          <Marker
+            key={`${item.geometry.coordinates[0]}-${item.geometry.coordinates[1]}-${item.id}`}
+            coordinate={{
+              latitude: item.geometry.coordinates[1],
+              longitude: item.geometry.coordinates[0],
+            }}
+            onPress={() => handleMarkerPress(item)}
+          >
+            <View
+              style={[
+                styles.marker,
+                {
+                  width: isCluster ? 28 + count.toString().length * 4 : 24,
+                  height: isCluster ? 28 : 24,
+                  borderRadius: isCluster ? 14 + count.toString().length * 2 : 12,
+                  backgroundColor: colors.map.pin,
+                },
+              ]}
+            >
+              {isCluster && (
+                <Text style={styles.clusterText}>{count > 99 ? "99+" : count}</Text>
+              )}
+            </View>
+          </Marker>
+        );
+      })}
     </MapView>
   );
 }
 
 const styles = StyleSheet.create({
   map: { flex: 1 },
-  fallback: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
+  marker: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  clusterText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
 });
