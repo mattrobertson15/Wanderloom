@@ -24,3 +24,18 @@ export async function searchProfilesByUsername(client: WanderloomClient, query: 
   if (error) throw error;
   return data;
 }
+
+export async function updateProfile(
+  client: WanderloomClient,
+  profileId: string,
+  updates: {
+    display_name?: string;
+    bio?: string;
+    avatar_url?: string;
+    is_public_profile?: boolean;
+  }
+) {
+  const { data, error } = await client.from("profiles").update(updates).eq("id", profileId).select().single();
+  if (error) throw error;
+  return data;
+}

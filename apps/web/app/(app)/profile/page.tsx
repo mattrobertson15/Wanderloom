@@ -1,22 +1,17 @@
-import { TripCard } from "@/components/trip-card";
-import { MOCK_TRIPS } from "@/lib/mock/trips";
+import { redirect } from "next/navigation";
+import { getProfile, listTripsForOwner } from "@wanderloom/api";
+import { getServerSupabaseClient } from "@/lib/supabase/server";
+import ProfilePageClient from "./client";
 
-export default function ProfilePage() {
-  return (
-    <div className="px-6 py-6 md:px-12">
-      <div className="flex items-center gap-4">
-        <div className="h-16 w-16 rounded-full bg-accent-secondary/20" />
-        <div>
-          <h1 className="font-display text-2xl text-text-primary">Your profile</h1>
-          <p className="text-sm text-text-secondary">@you · Edit your bio and avatar here.</p>
-        </div>
-      </div>
-      <h2 className="mt-8 font-display text-xl text-text-primary">Your trips</h2>
-      <div className="mt-4 grid gap-6 md:grid-cols-3">
-        {MOCK_TRIPS.map((trip) => (
-          <TripCard key={trip.slug} trip={trip} />
-        ))}
-      </div>
-    </div>
-  );
+export default async function ProfilePage() {
+  const supabase = await getServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/sign-in");
+
+  const profile = await getProfile(supabase, user.id);
+  const trips = await listTripsForOwner(supabase, user.id);
+
+  return <ProfilePageClient profile={profile} trips={trips} />;
 }

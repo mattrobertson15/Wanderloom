@@ -1,5 +1,6 @@
 /** Centralized TanStack Query key factory so cache keys stay consistent across apps. */
 export const queryKeys = {
+  profile: (profileId: string) => ["profile", profileId] as const,
   trip: (idOrSlug: string) => ["trip", idOrSlug] as const,
   tripsByOwner: (ownerId: string) => ["trips", "owner", ownerId] as const,
   discoverTrips: (viewerId: string) => ["trips", "discover", viewerId] as const,
