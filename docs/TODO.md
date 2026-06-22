@@ -37,7 +37,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Visibility controls (private/friends/public) (wired on trip-create and post-create forms)
 - [x] Public profile page (`/u/[username]`) (mock public trips)
 - [x] Public trip page (`/t/[tripSlug]`)
-- [ ] Shareable link generation + `/share/[token]` resolver (API functions exist; resolver page is a TODO stub)
+- [x] Shareable link generation + `/share/[token]` resolver
 - [ ] Friends/follow basic UI
 - [ ] Open Graph meta tags for public pages (present on trip page only; not app-wide)
 
@@ -75,7 +75,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 ## Public Sharing
 - [x] Public profile page rendering rules
 - [x] Public trip page rendering rules
-- [ ] Shareable link generation + resolution (API functions exist; resolver route is a stub)
+- [x] Shareable link generation + resolution
 - [ ] Public trips discovery/browse index
 
 ## AI

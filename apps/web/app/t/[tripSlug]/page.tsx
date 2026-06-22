@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTripBySlug, listAlbumsForTrip, listPostsForTrip } from "@wanderloom/api";
 import type { WanderloomClient } from "@wanderloom/db";
 import { PostCard, type PostCardData } from "@/components/post-card";
+import { ShareLinkButton } from "@/components/share-link-button";
 import { VisibilityBadge } from "@/components/visibility-badge";
 import { getServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -60,9 +61,12 @@ export default async function PublicTripPage({ params }: { params: Promise<{ tri
         style={{ backgroundImage: `url(${FALLBACK_COVER_IMAGE_URL})` }}
       />
       <div className="mx-auto max-w-4xl px-6 py-8 md:px-12">
-        <div className="flex items-center gap-3">
-          <h1 className="font-display text-3xl text-text-primary">{trip.title}</h1>
-          <VisibilityBadge visibility={trip.visibility} />
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-3xl text-text-primary">{trip.title}</h1>
+            <VisibilityBadge visibility={trip.visibility} />
+          </div>
+          {isOwner && <ShareLinkButton tripId={trip.id} />}
         </div>
         <div className="mt-8 flex items-center justify-between gap-3">
           <h2 className="font-display text-xl text-text-primary">Albums</h2>
