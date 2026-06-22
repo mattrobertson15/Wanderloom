@@ -48,7 +48,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Trip list/detail view (real Supabase data via `@tanstack/react-query`; `/trip/[id]` detail route shows posts, no photos yet — no signed-URL endpoint on mobile)
 - [x] Post creation flow (`/create` tab: trip picker, title/body/date/visibility, real `createPost`; no photo attach or place attach yet)
 - [x] Photo upload flow (`expo-image-picker` with `base64: true`, decoded to `ArrayBuffer` and uploaded via shared `uploadPostPhoto`/`attachPhotoToPost`; thumbnail preview + remove in `/create`; still no photo *display* in trip detail — no signed-URL endpoint on mobile)
-- [ ] Place search/attach/create flow
+- [x] Place search/attach/create flow (`PlacePicker` in `/create`: search existing places via `searchPlacesByName`, attach by setting `place_id`; if no match, create one from the device's current location via `expo-location`)
 - [x] Visibility selector (shared `VisibilitySelector` component on web + mobile with icon/label/description per level, replacing inline radio/pill lists in post and trip creation forms)
 - [x] Browse friends'/public trips (`Discover` tab uses new `listDiscoverableTrips` — relies on the existing `can_view_trip` RLS policy to surface friends'-visibility and public trips, excluding the viewer's own; shows owner `@username` on each card; friend-request/follow actions remain web-only)
 

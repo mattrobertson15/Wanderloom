@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { attachPhotoToPost, createPost, listTripsForOwner, queryKeys, uploadPostPhoto, useWanderloomClient } from "@wanderloom/api";
 import { colors, type Visibility } from "@wanderloom/config";
+import type { PlaceRow } from "@wanderloom/db";
 import { createPostSchema } from "@wanderloom/validation";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -8,6 +9,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { base64ToArrayBuffer } from "@/lib/base64";
 import { useAuth } from "@/lib/auth-context";
+import { PlacePicker } from "@/components/place-picker";
 import { VisibilitySelector } from "@/components/visibility-selector";
 
 export default function CreateScreen() {
@@ -29,6 +31,7 @@ export default function CreateScreen() {
   const [postDate, setPostDate] = useState("");
   const [visibility, setVisibility] = useState<Visibility>("private");
   const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  const [place, setPlace] = useState<PlaceRow | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -77,6 +80,7 @@ export default function CreateScreen() {
       body: body || undefined,
       post_date: postDate || undefined,
       visibility,
+      place_id: place?.id,
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Invalid post details");
@@ -104,6 +108,7 @@ export default function CreateScreen() {
       setBody("");
       setPostDate("");
       setPhotos([]);
+      setPlace(null);
       if (selectedTrip) router.push(`/trip/${selectedTrip.slug}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create post");
@@ -181,6 +186,9 @@ export default function CreateScreen() {
           <Text style={styles.addPhotosLabel}>+ Add</Text>
         </Pressable>
       </ScrollView>
+
+      <Text style={styles.label}>Place</Text>
+      {userId && <PlacePicker value={place} onChange={setPlace} creatorId={userId} />}
 
       <Text style={styles.label}>Visibility</Text>
       <VisibilitySelector value={visibility} onChange={setVisibility} />

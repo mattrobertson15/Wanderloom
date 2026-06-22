@@ -23,6 +23,12 @@
         {
           "photosPermission": "Allow Wanderloom to access your photos to attach them to posts."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Wanderloom to use your location to attach a place to your post."
+        }
       ]
     ],
     "extra": {
