@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTripBySlug, listAlbumsForTrip, listPostsForTrip } from "@wanderloom/api";
+import { createSignedPhotoUrl, getTripBySlug, listAlbumsForTrip, listPostsForTrip } from "@wanderloom/api";
 import type { WanderloomClient } from "@wanderloom/db";
 import { PostCard, type PostCardData } from "@/components/post-card";
 import { ShareLinkButton } from "@/components/share-link-button";
 import { VisibilityBadge } from "@/components/visibility-badge";
 import { getServerSupabaseClient } from "@/lib/supabase/server";
+import { getServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 const FALLBACK_COVER_IMAGE_URL = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800";
 
@@ -46,13 +47,26 @@ export default async function PublicTripPage({ params }: { params: Promise<{ tri
   } = await supabase.auth.getUser();
   const isOwner = user?.id === trip.owner_id;
 
-  const postCards: PostCardData[] = posts.map((post) => ({
-    title: post.title,
-    body: post.body,
-    photoUrl: null,
-    placeName: (post.places as { name: string } | null)?.name ?? null,
-    postDate: post.post_date,
-  }));
+  // RLS on `photos` already filtered each post's photos to ones the viewer
+  // can see; the bucket itself has no select policy, so signing requires
+  // the service-role client (see createSignedPhotoUrl).
+  const serviceRoleClient = getServiceRoleSupabaseClient();
+  const postCards: PostCardData[] = await Promise.all(
+    posts.map(async (post) => {
+      const photos = (post.photos as { storage_path: string; sort_order: number }[] | null) ?? [];
+      const coverPhoto = [...photos].sort((a, b) => a.sort_order - b.sort_order)[0] ?? null;
+      const photoUrl = coverPhoto
+        ? await createSignedPhotoUrl(serviceRoleClient, coverPhoto.storage_path).catch(() => null)
+        : null;
+      return {
+        title: post.title,
+        body: post.body,
+        photoUrl,
+        placeName: (post.places as { name: string } | null)?.name ?? null,
+        postDate: post.post_date,
+      };
+    }),
+  );
 
   return (
     <main className="min-h-screen bg-background-base">

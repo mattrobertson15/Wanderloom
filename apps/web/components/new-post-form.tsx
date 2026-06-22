@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
-import { createPost, useWanderloomClient } from "@wanderloom/api";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { attachPhotoToPost, createPost, uploadPostPhoto, useWanderloomClient } from "@wanderloom/api";
 import { VISIBILITY_LEVELS, type Visibility } from "@wanderloom/config";
 import { createPostSchema } from "@wanderloom/validation";
 
@@ -21,8 +21,13 @@ export function NewPostForm({
   const [body, setBody] = useState("");
   const [postDate, setPostDate] = useState("");
   const [visibility, setVisibility] = useState<Visibility>(defaultVisibility);
+  const [photos, setPhotos] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  function handlePhotosChange(event: ChangeEvent<HTMLInputElement>) {
+    setPhotos(Array.from(event.target.files ?? []));
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -51,7 +56,11 @@ export function NewPostForm({
     }
 
     try {
-      await createPost(client, user.id, parsed.data);
+      const post = await createPost(client, user.id, parsed.data);
+      for (const [index, file] of photos.entries()) {
+        const path = await uploadPostPhoto(client, user.id, post.id, file);
+        await attachPhotoToPost(client, user.id, { post_id: post.id, storage_path: path, sort_order: index });
+      }
       router.push(`/t/${tripSlug}`);
       router.refresh();
     } catch (err) {
@@ -89,6 +98,13 @@ export function NewPostForm({
           onChange={(e) => setPostDate(e.target.value)}
           className="rounded-md border border-text-secondary/30 px-3 py-2 text-text-primary"
         />
+      </label>
+      <label className="flex flex-col gap-1 text-sm text-text-secondary">
+        Photos
+        <input type="file" accept="image/*" multiple onChange={handlePhotosChange} className="text-text-primary" />
+        {photos.length > 0 && (
+          <span className="text-xs text-text-secondary">{photos.length} photo(s) selected</span>
+        )}
       </label>
       <fieldset className="flex flex-col gap-2 text-sm text-text-secondary">
         <legend className="mb-1">Visibility</legend>

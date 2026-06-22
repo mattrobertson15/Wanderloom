@@ -32,7 +32,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Authenticated app shell + nav
 - [x] Trip list/detail/create (real Supabase queries; no edit/delete UI yet)
 - [x] Album create/edit nested in trip
-- [x] Post create (title/body/date/visibility, owner-gated at `/t/[tripSlug]/posts/new`; no edit/delete UI, no place/photo attach yet)
+- [x] Post create (title/body/date/visibility, owner-gated at `/t/[tripSlug]/posts/new`; photo attach now wired; no edit/delete UI, no place attach yet)
 - [x] Globe/map view with pins + filters (mock pin data)
 - [x] Visibility controls (private/friends/public) (wired on trip-create and post-create forms)
 - [x] Public profile page (`/u/[username]`) (mock public trips)
@@ -62,7 +62,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 ## Media
 - [x] Storage buckets: `avatars`, `trip-covers`, `post-photos`
 - [x] Storage bucket RLS/access policies
-- [ ] Web photo upload flow
+- [x] Web photo upload flow
 - [ ] Mobile photo upload flow
 - [ ] Basic upload retry handling
 
