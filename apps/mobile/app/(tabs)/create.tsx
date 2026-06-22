@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { attachPhotoToPost, createPost, listTripsForOwner, queryKeys, uploadPostPhoto, useWanderloomClient } from "@wanderloom/api";
-import { VISIBILITY_LEVELS, colors, type Visibility } from "@wanderloom/config";
+import { colors, type Visibility } from "@wanderloom/config";
 import { createPostSchema } from "@wanderloom/validation";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { base64ToArrayBuffer } from "@/lib/base64";
 import { useAuth } from "@/lib/auth-context";
+import { VisibilitySelector } from "@/components/visibility-selector";
 
 export default function CreateScreen() {
   const { session } = useAuth();
@@ -182,17 +183,7 @@ export default function CreateScreen() {
       </ScrollView>
 
       <Text style={styles.label}>Visibility</Text>
-      <View style={styles.pillRow}>
-        {VISIBILITY_LEVELS.map((level) => (
-          <Pressable
-            key={level}
-            style={[styles.pill, visibility === level && styles.pillActive]}
-            onPress={() => setVisibility(level)}
-          >
-            <Text style={[styles.pillLabel, visibility === level && styles.pillLabelActive]}>{level}</Text>
-          </Pressable>
-        ))}
-      </View>
+      <VisibilitySelector value={visibility} onChange={setVisibility} />
 
       {error && <Text style={styles.error}>{error}</Text>}
 

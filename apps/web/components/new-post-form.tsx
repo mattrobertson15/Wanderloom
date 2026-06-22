@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { attachPhotoToPost, createPost, uploadPostPhoto, useWanderloomClient } from "@wanderloom/api";
-import { VISIBILITY_LEVELS, type Visibility } from "@wanderloom/config";
+import type { Visibility } from "@wanderloom/config";
 import { createPostSchema } from "@wanderloom/validation";
+import { VisibilitySelector } from "./visibility-selector";
 
 export function NewPostForm({
   tripId,
@@ -106,21 +107,7 @@ export function NewPostForm({
           <span className="text-xs text-text-secondary">{photos.length} photo(s) selected</span>
         )}
       </label>
-      <fieldset className="flex flex-col gap-2 text-sm text-text-secondary">
-        <legend className="mb-1">Visibility</legend>
-        {VISIBILITY_LEVELS.map((level) => (
-          <label key={level} className="flex items-center gap-2 capitalize">
-            <input
-              type="radio"
-              name="visibility"
-              value={level}
-              checked={visibility === level}
-              onChange={() => setVisibility(level)}
-            />
-            {level}
-          </label>
-        ))}
-      </fieldset>
+      <VisibilitySelector value={visibility} onChange={setVisibility} />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"
