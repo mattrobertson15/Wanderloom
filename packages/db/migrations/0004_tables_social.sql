@@ -8,13 +8,13 @@ create table friendships (
   status friend_status not null default 'pending',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint friendships_no_self_friend check (requester_id <> addressee_id),
-  constraint friendships_unique_pair unique (
-    least(requester_id, addressee_id),
-    greatest(requester_id, addressee_id)
-  )
+  constraint friendships_no_self_friend check (requester_id <> addressee_id)
 );
 
+create unique index friendships_unique_pair_idx on friendships (
+  least(requester_id, addressee_id),
+  greatest(requester_id, addressee_id)
+);
 create index friendships_requester_id_idx on friendships (requester_id);
 create index friendships_addressee_id_idx on friendships (addressee_id);
 
