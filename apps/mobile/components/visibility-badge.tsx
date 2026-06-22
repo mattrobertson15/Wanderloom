@@ -1,15 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
-import { visibilityLabel } from "@wanderloom/ui";
+import { VISIBILITY_EMOJI, visibilityLabel } from "@wanderloom/ui";
 import type { Visibility } from "@wanderloom/config";
 import { colors } from "@wanderloom/config";
-
-const ICON: Record<Visibility, string> = { private: "🔒", friends: "👥", public: "🌐" };
 
 export function VisibilityBadge({ visibility }: { visibility: Visibility }) {
   return (
     <View style={styles.badge}>
       <Text style={styles.text}>
-        {ICON[visibility]} {visibilityLabel(visibility)}
+        {VISIBILITY_EMOJI[visibility]} {visibilityLabel(visibility)}
       </Text>
     </View>
   );

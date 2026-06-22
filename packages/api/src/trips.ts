@@ -23,6 +23,23 @@ export async function listTripsForOwner(client: WanderloomClient, ownerId: strin
   return data;
 }
 
+/**
+ * Trips owned by other people that the viewer is allowed to see — friends'
+ * `friends`-visibility trips and anyone's `public` trips. Relies on the
+ * `can_view_trip` RLS policy to do the actual visibility filtering; this
+ * just excludes the viewer's own trips (those already show up in "My trips").
+ */
+export async function listDiscoverableTrips(client: WanderloomClient, viewerId: string, limit = 30) {
+  const { data, error } = await client
+    .from("trips")
+    .select("*, profiles(username, display_name, avatar_url), pins(place_id)")
+    .neq("owner_id", viewerId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data;
+}
+
 export async function createTrip(client: WanderloomClient, ownerId: string, input: CreateTripInput) {
   const { data, error } = await client
     .from("trips")

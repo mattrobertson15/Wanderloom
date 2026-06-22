@@ -2,6 +2,7 @@
 export const queryKeys = {
   trip: (idOrSlug: string) => ["trip", idOrSlug] as const,
   tripsByOwner: (ownerId: string) => ["trips", "owner", ownerId] as const,
+  discoverTrips: (viewerId: string) => ["trips", "discover", viewerId] as const,
   albumsForTrip: (tripId: string) => ["albums", "trip", tripId] as const,
   postsForTrip: (tripId: string) => ["posts", "trip", tripId] as const,
   postsForAlbum: (albumId: string) => ["posts", "album", albumId] as const,

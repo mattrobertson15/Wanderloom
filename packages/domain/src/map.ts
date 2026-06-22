@@ -10,6 +10,7 @@ export interface PinForMap {
   id: string;
   place_id: string;
   trip_id: string;
+  trip_slug: string;
   post_id: string | null;
   owner_id: string;
   visibility: Visibility;
@@ -23,6 +24,7 @@ export interface PinFeatureProperties {
   pinId: string;
   placeId: string;
   tripId: string;
+  tripSlug: string;
   postId: string | null;
   ownerId: string;
   placeName: string;
@@ -47,6 +49,7 @@ export function pinToFeature(pin: PinForMap): PinFeature {
       pinId: pin.id,
       placeId: pin.place_id,
       tripId: pin.trip_id,
+      tripSlug: pin.trip_slug,
       postId: pin.post_id,
       ownerId: pin.owner_id,
       placeName: pin.place_name,
