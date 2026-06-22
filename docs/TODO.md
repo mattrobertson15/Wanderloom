@@ -56,8 +56,8 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Shared GeoJSON transform helpers (`packages/domain`/`packages/ui`)
 - [x] Web: Mapbox GL JS globe view
 - [x] Mobile: `@rnmapbox/maps` globe view with Mercator fallback flag
-- [ ] Client-side pin clustering
-- [ ] Pin tap → preview → navigate
+- [x] Client-side pin clustering (Mapbox `cluster`/`clusterRadius`/`clusterMaxZoom(Level)` on the shared GeoJSON source for web and mobile; cluster circle + count layers, click/press to zoom into a cluster)
+- [x] Pin tap → preview → navigate (tapping an unclustered pin shows a place-name preview card with a "View trip" link to `/t/[tripSlug]` (web) / `/trip/[tripSlug]` (mobile); `PinForMap`/`PinFeatureProperties` extended with `trip_slug`/`tripSlug` to carry the nav target; globe screens still render mock pin data — wiring `useVisiblePins()` is a separate, pre-existing gap noted inline as shipping later)
 
 ## Media
 - [x] Storage buckets: `avatars`, `trip-covers`, `post-photos`
