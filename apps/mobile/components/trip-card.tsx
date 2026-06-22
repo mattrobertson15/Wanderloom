@@ -1,10 +1,20 @@
 import { Link } from "expo-router";
 import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import type { Visibility } from "@wanderloom/config";
 import { colors } from "@wanderloom/config";
-import type { MockTrip } from "@/lib/mock/trips";
+import { formatDateRange } from "@wanderloom/ui";
 import { VisibilityBadge } from "./visibility-badge";
 
-export function TripCard({ trip }: { trip: MockTrip }) {
+export interface TripCardData {
+  slug: string;
+  title: string;
+  coverImageUrl: string;
+  startDate: string | null;
+  endDate: string | null;
+  visibility: Visibility;
+}
+
+export function TripCard({ trip }: { trip: TripCardData }) {
   return (
     <Link href={`/trip/${trip.slug}`} asChild>
       <Pressable style={styles.card}>
@@ -14,7 +24,7 @@ export function TripCard({ trip }: { trip: MockTrip }) {
           </View>
           <View style={styles.overlay}>
             <Text style={styles.title}>{trip.title}</Text>
-            <Text style={styles.dateRange}>{trip.dateRange}</Text>
+            <Text style={styles.dateRange}>{formatDateRange(trip.startDate, trip.endDate)}</Text>
           </View>
         </ImageBackground>
       </Pressable>

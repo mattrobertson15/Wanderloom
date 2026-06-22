@@ -45,7 +45,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Login/signup screens
 - [x] Tab navigation (Globe, Trips, Create, Discover, Profile)
 - [x] Globe/map view
-- [ ] Trip list/detail view (list only, mock data; no detail route)
+- [x] Trip list/detail view (real Supabase data via `@tanstack/react-query`; `/trip/[id]` detail route shows posts, no photos yet — no signed-URL endpoint on mobile)
 - [ ] Post creation flow
 - [ ] Photo upload flow
 - [ ] Place search/attach/create flow
