@@ -11,6 +11,12 @@ export async function listAlbumsForTrip(client: WanderloomClient, tripId: string
   return data;
 }
 
+export async function getAlbum(client: WanderloomClient, albumId: string) {
+  const { data, error } = await client.from("albums").select("*").eq("id", albumId).single();
+  if (error) throw error;
+  return data;
+}
+
 export async function createAlbum(client: WanderloomClient, input: CreateAlbumInput) {
   const { data, error } = await client.from("albums").insert(input).select("*").single();
   if (error) throw error;

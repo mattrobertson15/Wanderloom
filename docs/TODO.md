@@ -31,7 +31,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Auth screens (sign in, sign up)
 - [x] Authenticated app shell + nav
 - [x] Trip list/detail/create (real Supabase queries; no edit/delete UI yet)
-- [ ] Album create/edit nested in trip
+- [x] Album create/edit nested in trip
 - [x] Post create (title/body/date/visibility, owner-gated at `/t/[tripSlug]/posts/new`; no edit/delete UI, no place/photo attach yet)
 - [x] Globe/map view with pins + filters (mock pin data)
 - [x] Visibility controls (private/friends/public) (wired on trip-create and post-create forms)
