@@ -77,10 +77,22 @@ export async function deletePhoto(client: WanderloomClient, photoId: string) {
  * Uploads a photo file into the (uploader-scoped) `post-photos` bucket and
  * returns its storage path. Callers still need to insert a `photos` row via
  * `attachPhotoToPost` to make it queryable.
+ *
+ * `file` accepts a `Blob`/`File` (web) or `ArrayBuffer` (React Native, where
+ * `File`/`Blob` uploads are unreliable over the JS bridge) — `fileName` is
+ * taken as a separate argument since `ArrayBuffer` has no `.name`.
  */
-export async function uploadPostPhoto(client: WanderloomClient, uploaderId: string, postId: string, file: File) {
-  const path = `${uploaderId}/${postId}/${crypto.randomUUID()}-${file.name}`;
-  const { error } = await client.storage.from("post-photos").upload(path, file);
+export async function uploadPostPhoto(
+  client: WanderloomClient,
+  uploaderId: string,
+  postId: string,
+  file: Blob | ArrayBuffer,
+  fileName: string,
+  contentType?: string,
+) {
+  const uploadId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  const path = `${uploaderId}/${postId}/${uploadId}-${fileName}`;
+  const { error } = await client.storage.from("post-photos").upload(path, file, contentType ? { contentType } : undefined);
   if (error) throw error;
   return path;
 }

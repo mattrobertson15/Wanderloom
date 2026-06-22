@@ -1,10 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createPost, listTripsForOwner, queryKeys, useWanderloomClient } from "@wanderloom/api";
+import { attachPhotoToPost, createPost, listTripsForOwner, queryKeys, uploadPostPhoto, useWanderloomClient } from "@wanderloom/api";
 import { VISIBILITY_LEVELS, colors, type Visibility } from "@wanderloom/config";
 import { createPostSchema } from "@wanderloom/validation";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { base64ToArrayBuffer } from "@/lib/base64";
 import { useAuth } from "@/lib/auth-context";
 
 export default function CreateScreen() {
@@ -25,6 +27,7 @@ export default function CreateScreen() {
   const [body, setBody] = useState("");
   const [postDate, setPostDate] = useState("");
   const [visibility, setVisibility] = useState<Visibility>("private");
+  const [photos, setPhotos] = useState<ImagePicker.ImagePickerAsset[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,6 +43,27 @@ export default function CreateScreen() {
   function selectTrip(id: string, tripVisibility: Visibility) {
     setTripId(id);
     setVisibility(tripVisibility);
+  }
+
+  async function handlePickPhotos() {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      setError("Photo library access is required to attach photos.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      base64: true,
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      setPhotos((current) => [...current, ...result.assets]);
+    }
+  }
+
+  function removePhoto(index: number) {
+    setPhotos((current) => current.filter((_, i) => i !== index));
   }
 
   async function handleSubmit() {
@@ -60,11 +84,25 @@ export default function CreateScreen() {
 
     setSubmitting(true);
     try {
-      await createPost(client, userId, parsed.data);
+      const post = await createPost(client, userId, parsed.data);
+      for (const [index, asset] of photos.entries()) {
+        if (!asset.base64) continue;
+        const buffer = base64ToArrayBuffer(asset.base64);
+        const fileName = asset.fileName ?? `photo-${index}.jpg`;
+        const path = await uploadPostPhoto(client, userId, post.id, buffer, fileName, asset.mimeType);
+        await attachPhotoToPost(client, userId, {
+          post_id: post.id,
+          storage_path: path,
+          sort_order: index,
+          width: asset.width,
+          height: asset.height,
+        });
+      }
       await queryClient.invalidateQueries({ queryKey: queryKeys.postsForTrip(tripId) });
       setTitle("");
       setBody("");
       setPostDate("");
+      setPhotos([]);
       if (selectedTrip) router.push(`/trip/${selectedTrip.slug}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create post");
@@ -128,6 +166,21 @@ export default function CreateScreen() {
       <Text style={styles.label}>Date</Text>
       <TextInput style={styles.input} placeholder="YYYY-MM-DD" value={postDate} onChangeText={setPostDate} />
 
+      <Text style={styles.label}>Photos</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photoRow}>
+        {photos.map((asset, index) => (
+          <View key={asset.assetId ?? `${asset.uri}-${index}`} style={styles.photoThumbWrapper}>
+            <Image source={{ uri: asset.uri }} style={styles.photoThumb} />
+            <Pressable style={styles.photoRemoveButton} onPress={() => removePhoto(index)}>
+              <Text style={styles.photoRemoveLabel}>×</Text>
+            </Pressable>
+          </View>
+        ))}
+        <Pressable style={styles.addPhotosButton} onPress={handlePickPhotos}>
+          <Text style={styles.addPhotosLabel}>+ Add</Text>
+        </Pressable>
+      </ScrollView>
+
       <Text style={styles.label}>Visibility</Text>
       <View style={styles.pillRow}>
         {VISIBILITY_LEVELS.map((level) => (
@@ -183,6 +236,32 @@ const styles = StyleSheet.create({
   pillActive: { backgroundColor: colors.accent.primary, borderColor: colors.accent.primary },
   pillLabel: { fontSize: 13, color: colors.text.secondary, textTransform: "capitalize" },
   pillLabelActive: { color: "white" },
+  photoRow: { flexDirection: "row" },
+  photoThumbWrapper: { marginRight: 8, position: "relative" },
+  photoThumb: { width: 72, height: 72, borderRadius: 8 },
+  photoRemoveButton: {
+    position: "absolute",
+    top: -6,
+    right: -6,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.text.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  photoRemoveLabel: { color: "white", fontSize: 12, lineHeight: 12 },
+  addPhotosButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.text.secondary + "4D",
+    borderStyle: "dashed",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addPhotosLabel: { fontSize: 12, color: colors.text.secondary },
   error: { color: "#DC2626", marginTop: 12 },
   button: {
     marginTop: 24,

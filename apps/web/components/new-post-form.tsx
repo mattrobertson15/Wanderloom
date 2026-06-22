@@ -58,7 +58,7 @@ export function NewPostForm({
     try {
       const post = await createPost(client, user.id, parsed.data);
       for (const [index, file] of photos.entries()) {
-        const path = await uploadPostPhoto(client, user.id, post.id, file);
+        const path = await uploadPostPhoto(client, user.id, post.id, file, file.name, file.type);
         await attachPhotoToPost(client, user.id, { post_id: post.id, storage_path: path, sort_order: index });
       }
       router.push(`/t/${tripSlug}`);
