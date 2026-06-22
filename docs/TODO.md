@@ -46,7 +46,7 @@ Organized by area. Check items off as sessions complete. This list is a practica
 - [x] Tab navigation (Globe, Trips, Create, Discover, Profile)
 - [x] Globe/map view
 - [x] Trip list/detail view (real Supabase data via `@tanstack/react-query`; `/trip/[id]` detail route shows posts, no photos yet — no signed-URL endpoint on mobile)
-- [ ] Post creation flow
+- [x] Post creation flow (`/create` tab: trip picker, title/body/date/visibility, real `createPost`; no photo attach or place attach yet)
 - [ ] Photo upload flow
 - [ ] Place search/attach/create flow
 - [ ] Visibility selector
